@@ -15,3 +15,7 @@ class NadaAtrasError(Exception):
 
 class ColaVaciaError(Exception):
     """Se intentó leer o quitar el frente de una cola sin elementos."""
+
+
+class NotificacionInvalidaError(Exception):
+    """El tipo o el origen de la notificación no son válidos."""
