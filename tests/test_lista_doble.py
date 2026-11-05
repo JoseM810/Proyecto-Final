@@ -94,4 +94,27 @@ def test_insertar_en_medio_del_recorrido_mantiene_los_enlaces():
     vuelta = [lista.actual()]
     while lista.retroceder():
         vuelta.append(lista.actual())
-    assert ida == ["D", "C",
+    assert ida == ["D", "C", "B", "A"]
+    assert vuelta == ["A", "B", "C", "D"]
+    
+
+# --- tamanio ---
+def test_tamanio_nueva_es_cero():
+    """INV-01: una lista nueva tiene tamaño 0."""
+    assert ListaDoble().tamanio() == 0
+
+
+def test_muchos_elementos_se_recorren_en_ambos_sentidos():
+    """Caso extremo: con 10 000 elementos, ir al final y volver termina en el inicio."""
+    lista = ListaDoble()
+    for i in range(10_000):
+        lista.insertar_al_inicio(i)
+    assert lista.tamanio() == 10_000
+    pasos = 0
+    while lista.avanzar():
+        pasos += 1
+    assert pasos == 9_999
+    assert lista.actual() == 0
+    while lista.retroceder():
+        pass
+    assert lista.actual() == 9_999
