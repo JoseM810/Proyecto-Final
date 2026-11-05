@@ -11,3 +11,7 @@ class PantallaInvalidaError(Exception):
 
 class NadaAtrasError(Exception):
     """No existe una pantalla anterior a la actual."""
+
+
+class ColaVaciaError(Exception):
+    """Se intentó leer o quitar el frente de una cola sin elementos."""
