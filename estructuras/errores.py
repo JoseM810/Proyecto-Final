@@ -19,3 +19,15 @@ class ColaVaciaError(Exception):
 
 class NotificacionInvalidaError(Exception):
     """El tipo o el origen de la notificación no son válidos."""
+
+
+class PublicacionInvalidaError(Exception):
+    """El texto o la fecha de la publicación no son válidos."""
+
+
+class FinDelFeedError(Exception):
+    """No hay una publicación más antigua que la actual."""
+
+
+class InicioDelFeedError(Exception):
+    """No hay una publicación más reciente que la actual."""
