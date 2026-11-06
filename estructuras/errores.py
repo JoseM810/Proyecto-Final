@@ -39,3 +39,11 @@ class ComentarioInvalidoError(Exception):
 
 class ComentarioNoEncontradoError(Exception):
     """No existe un comentario con el identificador indicado."""
+
+
+class EntradaInvalidaError(Exception):
+    """El nombre o el usuario que se quiere agregar no son válidos."""
+
+
+class NombreDuplicadoError(Exception):
+    """Ya existe un usuario registrado con ese nombre."""
