@@ -22,7 +22,7 @@ recorrido en preorden.
 | comentar | O(1) | O(1) | Enlazar al final de los hijos de la raíz virtual |
 | responder | O(1) | O(1) | Buscar el padre por id en el arreglo de apoyo y enlazar al final |
 | obtener | O(1) | O(1) | Leer la posición id del arreglo de apoyo |
-| recorrer | O(n) | O(n) | Visita cada nodo una vez; en el peor caso la pila guarda n nodos |
+| recorrer | O(n) | O(h) | Visita cada nodo una vez; la pila guarda como máximo un hermano pendiente por nivel de la rama actual (h = profundidad máxima, h ≤ n) |
 | cantidad | O(1) | O(1) | Se lleva un contador |
 
 ## 4. Diseño interno
@@ -36,8 +36,7 @@ recorrido en preorden.
   justifico aquí según la regla 4 de la constitución.
 - El identificador de un comentario nuevo es cantidad() + 1. La spec solo
   promete que son enteros positivos únicos, así que esto es decisión del plan.
-- recorrer() usa una PilaEnlazada propia para el preorden, sin recursión:
-  apila los hermanos pendientes y desciende al primer hijo
+- recorrer() es un generador: entrega los comentarios de uno en uno, sin construir una lista.
 - Invariante de representación: el nodo de la posición i del arreglo tiene
   id i; los hijos de un nodo forman una cadena de hermanos que termina en
   su último hijo; profundidad del hijo = profundidad del padre + 1
