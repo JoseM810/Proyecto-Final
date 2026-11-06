@@ -196,3 +196,103 @@ def test_cadena_profunda_de_respuestas():
         ultimo = hilo.responder(ultimo, "Ana", f"nivel {i}")
     assert hilo.obtener(ultimo).profundidad == 999
     assert hilo.cantidad() == 1_000
+
+
+# --- recorrer (T-03) ---
+def _resumen(hilo):
+    """Convierte el recorrido en pares (texto, profundidad) para compararlo."""
+    return [(c.texto, c.profundidad) for c in hilo.recorrer()]
+
+
+def test_hilo_en_preorden():
+    """CA-02: con A, su respuesta B, la respuesta C a B y el comentario D, el orden es A(0), B(1), C(2), D(0)."""
+    hilo = HiloComentarios()
+    a = hilo.comentar("Ana", "A")
+    b = hilo.responder(a, "Luis", "B")
+    hilo.responder(b, "Sara", "C")
+    hilo.comentar("Eva", "D")
+    assert _resumen(hilo) == [("A", 0), ("B", 1), ("C", 2), ("D", 0)]
+
+
+def test_respuesta_aparece_justo_despues_del_padre():
+    """CA-01 (posición): una respuesta posterior aparece justo después de su padre, antes del siguiente comentario."""
+    hilo = HiloComentarios()
+    a = hilo.comentar("Ana", "A")
+    hilo.comentar("Eva", "D")
+    hilo.responder(a, "Luis", "B")
+    assert _resumen(hilo) == [("A", 0), ("B", 1), ("D", 0)]
+
+
+def test_respuestas_en_orden_de_llegada():
+    """CA-04: las respuestas a un mismo comentario salen en el orden en que llegaron."""
+    hilo = HiloComentarios()
+    a = hilo.comentar("Ana", "A")
+    for texto in ("R1", "R2", "R3"):
+        hilo.responder(a, "Luis", texto)
+    assert _resumen(hilo) == [("A", 0), ("R1", 1), ("R2", 1), ("R3", 1)]
+
+
+def test_respuestas_en_orden_con_subhilos():
+    """CA-04: el subhilo de una respuesta aparece antes que la respuesta siguiente del mismo padre."""
+    hilo = HiloComentarios()
+    a = hilo.comentar("Ana", "A")
+    r1 = hilo.responder(a, "Luis", "R1")
+    hilo.responder(a, "Sara", "R2")
+    hilo.responder(r1, "Eva", "S1")
+    assert _resumen(hilo) == [("A", 0), ("R1", 1), ("S1", 2), ("R2", 1)]
+
+
+def test_hilo_vacio():
+    """CA-06: un hilo sin comentarios tiene cantidad() 0 y recorrer() no devuelve nada ni lanza error."""
+    hilo = HiloComentarios()
+    assert hilo.cantidad() == 0
+    assert _resumen(hilo) == []
+
+
+def test_recorrer_un_solo_comentario():
+    """Caso extremo: con un solo comentario, el recorrido lo devuelve a él solo."""
+    hilo = HiloComentarios()
+    hilo.comentar("Ana", "A")
+    assert _resumen(hilo) == [("A", 0)]
+
+
+def test_padre_siempre_antes_que_hijo():
+    """INV-03: en recorrer(), todo comentario con padre aparece después de su padre."""
+    hilo = HiloComentarios()
+    padre_de = {}
+    for i in range(30):
+        raiz = hilo.comentar("Ana", f"raiz{i}")
+        for j in range(3):
+            hijo = hilo.responder(raiz, "Luis", f"hijo{i}-{j}")
+            padre_de[hijo] = raiz
+            for k in range(2):
+                nieto = hilo.responder(hijo, "Sara", f"nieto{i}-{j}-{k}")
+                padre_de[nieto] = hijo
+    posicion = {}
+    for lugar, comentario in enumerate(hilo.recorrer()):
+        posicion[comentario.id] = lugar
+    assert len(posicion) == hilo.cantidad()
+    for hijo, padre in padre_de.items():
+        assert posicion[padre] < posicion[hijo]
+
+
+def test_recorrer_no_modifica_el_hilo():
+    """Spec: recorrer no cambia el hilo; dos recorridos seguidos dan lo mismo."""
+    hilo = HiloComentarios()
+    a = hilo.comentar("Ana", "A")
+    hilo.responder(a, "Luis", "B")
+    primero = _resumen(hilo)
+    segundo = _resumen(hilo)
+    assert primero == segundo
+    assert hilo.cantidad() == 2
+
+
+def test_recorrer_cadena_muy_profunda_sin_recursion():
+    """Caso extremo: 5 000 respuestas encadenadas se recorren sin desbordar la recursión."""
+    hilo = HiloComentarios()
+    ultimo = hilo.comentar("Ana", "raiz")
+    for i in range(1, 5_000):
+        ultimo = hilo.responder(ultimo, "Ana", f"nivel {i}")
+    recorrido = list(hilo.recorrer())
+    assert len(recorrido) == 5_000
+    assert recorrido[-1].profundidad == 4_999
