@@ -1,5 +1,6 @@
 """Hilo de comentarios de una publicación."""
 from estructuras.errores import ComentarioInvalidoError, ComentarioNoEncontradoError
+from estructuras.pila import PilaEnlazada
 
 
 class NodoComentario:
@@ -68,6 +69,25 @@ class HiloComentarios:
         Lanza ComentarioNoEncontradoError si no existe.
         """
         return self._buscar(id_comentario)
+
+    def recorrer(self):
+        """Entrega los comentarios en preorden, cada uno después de su padre.
+
+        Es un generador: devuelve los nodos uno a uno (cada uno con su
+        profundidad), sin construir una lista y sin recursión. Usa una
+        PilaEnlazada para recordar el hermano pendiente de cada nivel.
+        Tiempo O(n) para recorrer todo, espacio O(h), con h la profundidad
+        máxima. No modifica el hilo.
+        """
+        pila = PilaEnlazada()
+        actual = self._raiz.primer_hijo
+        while actual is not None or pila.tamanio() > 0:
+            if actual is None:
+                actual = pila.desapilar()
+            yield actual
+            if actual.siguiente_hermano is not None:
+                pila.apilar(actual.siguiente_hermano)
+            actual = actual.primer_hijo
 
     def cantidad(self):
         """Cantidad de comentarios, respuestas incluidas. Tiempo O(1)."""
