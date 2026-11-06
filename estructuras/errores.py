@@ -31,3 +31,7 @@ class FinDelFeedError(Exception):
 
 class InicioDelFeedError(Exception):
     """No hay una publicación más reciente que la actual."""
+
+
+class ComentarioInvalidoError(Exception):
+    """El autor o el texto del comentario no son válidos."""
