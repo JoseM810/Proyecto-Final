@@ -29,3 +29,15 @@
 | 05-indice-usuarios | CA-05 | test_agregar_invalido | dominio/indice_usuarios.py · agregar() |
 | 05-indice-usuarios | CA-06 | test_indice_vacio | dominio/indice_usuarios.py · listar(), cantidad() |
 | 05-indice-usuarios | CA-07 | test_nombres_ya_ordenados | dominio/indice_usuarios.py · buscar(), listar() |
+| 06-red | CA-01 | test_ids_consecutivos | dominio/red.py · agregar_usuario() |
+| 06-red | CA-02 | test_seguir_y_aparece | dominio/red.py · seguir(), sigue(), seguidos() |
+| 06-red | CA-03 | test_seguir_repetido | dominio/red.py · seguir() |
+| 06-red | CA-04 | test_seguir_a_si_mismo | dominio/red.py · seguir() |
+| 06-red | CA-05 | test_relacion_dirigida | dominio/red.py · sigue() |
+| 06-red | CA-06 | test_dejar_de_seguir | dominio/red.py · dejar_de_seguir() |
+| 06-red | CA-07 | test_usuario_inexistente | dominio/red.py · _validar() |
+| 06-red | CA-08 | test_seguidos_en_orden | dominio/red.py · seguidos() |
+| 06-red | CA-09 | test_recomendar_a_dos_saltos | dominio/red.py · recomendar() |
+| 06-red | CA-10 | test_recomendar_sin_repetidos_ni_conocidos | dominio/red.py · recomendar() |
+| 06-red | CA-11 | test_recomendar_sin_candidatos | dominio/red.py · recomendar() |
+| 06-red | CA-12 | test_recomendar_orden | dominio/red.py · recomendar() |
