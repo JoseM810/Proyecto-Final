@@ -35,3 +35,7 @@ class InicioDelFeedError(Exception):
 
 class ComentarioInvalidoError(Exception):
     """El autor o el texto del comentario no son válidos."""
+
+
+class ComentarioNoEncontradoError(Exception):
+    """No existe un comentario con el identificador indicado."""

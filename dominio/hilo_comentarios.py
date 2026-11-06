@@ -1,5 +1,5 @@
 """Hilo de comentarios de una publicación."""
-from estructuras.errores import ComentarioInvalidoError
+from estructuras.errores import ComentarioInvalidoError, ComentarioNoEncontradoError
 
 
 class NodoComentario:
@@ -51,6 +51,24 @@ class HiloComentarios:
         self._validar(autor, texto)
         return self._agregar_hijo(self._raiz, autor, texto)
 
+    def responder(self, id_padre, autor, texto):
+        """Crea una respuesta al comentario id_padre y devuelve su identificador.
+
+        Tiempo O(1) amortizado, espacio O(1).
+        Lanza ComentarioInvalidoError si autor o texto no son válidos (se revisa
+        primero) y ComentarioNoEncontradoError si id_padre no existe.
+        """
+        self._validar(autor, texto)
+        padre = self._buscar(id_padre)
+        return self._agregar_hijo(padre, autor, texto)
+
+    def obtener(self, id_comentario):
+        """Devuelve el comentario con ese identificador. Tiempo O(1), espacio O(1).
+
+        Lanza ComentarioNoEncontradoError si no existe.
+        """
+        return self._buscar(id_comentario)
+
     def cantidad(self):
         """Cantidad de comentarios, respuestas incluidas. Tiempo O(1)."""
         return self._cantidad
@@ -78,4 +96,19 @@ class HiloComentarios:
         self._nodos.append(nodo)
         self._cantidad += 1
         return nodo.id
+
+    def _buscar(self, id_comentario):
+        """Devuelve el nodo con ese id leyendo el arreglo de apoyo. Tiempo O(1).
+
+        Un id válido es un entero (no booleano) entre 1 y cantidad(); el 0 es
+        la raíz virtual y no cuenta como comentario.
+        """
+        if (
+            not isinstance(id_comentario, int)
+            or isinstance(id_comentario, bool)
+            or id_comentario < 1
+            or id_comentario > self._cantidad
+        ):
+            raise ComentarioNoEncontradoError("no existe ese comentario")
+        return self._nodos[id_comentario]
         
