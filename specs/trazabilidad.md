@@ -22,3 +22,10 @@
 | 04-comentarios | CA-05 | test_comentario_invalido | dominio/hilo_comentarios.py · comentar(), _validar() |
 | 04-comentarios | CA-06 | test_hilo_vacio | dominio/hilo_comentarios.py · recorrer(), cantidad() |
 | 04-comentarios | CA-07 | test_obtener_comentario | dominio/hilo_comentarios.py · obtener(), _buscar() |
+| 05-indice-usuarios | CA-01 | test_buscar_existente | dominio/indice_usuarios.py · agregar(), buscar() |
+| 05-indice-usuarios | CA-02 | test_buscar_inexistente | dominio/indice_usuarios.py · buscar() |
+| 05-indice-usuarios | CA-03 | test_listar_en_orden | dominio/indice_usuarios.py · listar() |
+| 05-indice-usuarios | CA-04 | test_agregar_duplicado | dominio/indice_usuarios.py · agregar() |
+| 05-indice-usuarios | CA-05 | test_agregar_invalido | dominio/indice_usuarios.py · agregar() |
+| 05-indice-usuarios | CA-06 | test_indice_vacio | dominio/indice_usuarios.py · listar(), cantidad() |
+| 05-indice-usuarios | CA-07 | test_nombres_ya_ordenados | dominio/indice_usuarios.py · buscar(), listar() |
