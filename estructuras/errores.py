@@ -47,3 +47,11 @@ class EntradaInvalidaError(Exception):
 
 class NombreDuplicadoError(Exception):
     """Ya existe un usuario registrado con ese nombre."""
+
+
+class UsuarioNoExisteError(Exception):
+    """El identificador no corresponde a ningún usuario de la red."""
+
+
+class AutoSeguimientoError(Exception):
+    """Un usuario intentó seguirse a sí mismo."""
