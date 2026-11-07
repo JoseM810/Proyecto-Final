@@ -55,3 +55,7 @@ class UsuarioNoExisteError(Exception):
 
 class AutoSeguimientoError(Exception):
     """Un usuario intentó seguirse a sí mismo."""
+
+
+class BusquedaInvalidaError(Exception):
+    """La palabra de búsqueda no es un texto no vacío."""

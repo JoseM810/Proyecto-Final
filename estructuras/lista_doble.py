@@ -60,6 +60,17 @@ class ListaDoble:
         self._actual = self._actual.anterior
         return True
 
+    def recorrer(self):
+        """Entrega los valores de la cabeza a la cola, del más reciente al más antiguo.
+
+        Es un generador y no mueve el cursor. Tiempo O(n) para recorrer
+        todo, espacio O(1).
+        """
+        nodo = self._cabeza
+        while nodo is not None:
+            yield nodo.valor
+            nodo = nodo.siguiente
+            
     def tamanio(self):
         """Cantidad de elementos. Tiempo O(1), espacio O(1)."""
         return self._tamanio

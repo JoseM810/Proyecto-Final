@@ -3,6 +3,7 @@ from estructuras.errores import (
     FinDelFeedError,
     InicioDelFeedError,
     PublicacionInvalidaError,
+    BusquedaInvalidaError,
 )
 from estructuras.lista_doble import ListaDoble
 
@@ -66,6 +67,25 @@ class Feed:
             raise InicioDelFeedError("no hay publicaciones más recientes")
         return self._lista.actual()
 
+    def buscar(self, palabra):
+        """Entrega las publicaciones cuyo texto contiene palabra, de la más reciente a la más antigua.
+
+        No distingue mayúsculas de minúsculas ni modifica el feed ni la posición
+        actual. Tiempo O(n·m) al recorrer todo (n publicaciones, m longitud del
+        texto), espacio O(1).
+        Lanza BusquedaInvalidaError, al llamar y no al recorrer, si palabra no
+        es un texto no vacío.
+        """
+        if not isinstance(palabra, str) or palabra == "":
+            raise BusquedaInvalidaError("la palabra debe ser un texto no vacío")
+        return self._buscar(palabra.lower())
+
+    def _buscar(self, palabra_minuscula):
+        """Generador interno de buscar, con la palabra ya validada y en minúsculas."""
+        for publicacion in self._lista.recorrer():
+            if palabra_minuscula in publicacion.texto.lower():
+                yield publicacion
+                
     def cantidad(self):
         """Cantidad de publicaciones. Tiempo O(1), espacio O(1)."""
         return self._lista.tamanio()
