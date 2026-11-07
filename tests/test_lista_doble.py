@@ -118,3 +118,27 @@ def test_muchos_elementos_se_recorren_en_ambos_sentidos():
     while lista.retroceder():
         pass
     assert lista.actual() == 9_999
+
+    
+# --- recorrer ---
+def test_recorrer_entrega_del_mas_reciente_al_mas_antiguo():
+    """Soporta CA-06 de 03-feed: recorrer entrega los elementos de la cabeza a la cola."""
+    lista = ListaDoble()
+    for x in ("A", "B", "C"):
+        lista.insertar_al_inicio(x)
+    assert [x for x in lista.recorrer()] == ["C", "B", "A"]
+
+
+def test_recorrer_lista_vacia():
+    """Soporta CA-07 de 03-feed: una lista vacía no entrega nada y no lanza error."""
+    assert [x for x in ListaDoble().recorrer()] == []
+
+
+def test_recorrer_no_mueve_el_cursor():
+    """Soporta CA-09 de 03-feed: recorrer no cambia la posición actual."""
+    lista = ListaDoble()
+    for x in ("A", "B", "C"):
+        lista.insertar_al_inicio(x)
+    lista.avanzar()
+    [x for x in lista.recorrer()]
+    assert lista.actual() == "B"

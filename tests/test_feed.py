@@ -3,6 +3,7 @@ import pytest
 
 from dominio.feed import Feed
 from estructuras.errores import (
+    BusquedaInvalidaError,
     FinDelFeedError,
     InicioDelFeedError,
     PublicacionInvalidaError,
@@ -131,3 +132,66 @@ def test_muchas_publicaciones():
         feed.publicar(f"post{i}", i)
     assert feed.cantidad() == 5_000
     assert feed.actual().texto == "post4999"
+
+
+# --- buscar (v1.1) ---
+def _textos(resultado):
+    """Convierte el resultado de buscar en una lista de textos."""
+    return [p.texto for p in resultado]
+
+
+def test_buscar_por_palabra():
+    """CA-06: entrega solo las que contienen la palabra, sin distinguir mayúsculas, la más reciente primero."""
+    feed = Feed()
+    feed.publicar("Hola mundo", 1)
+    feed.publicar("Estructuras de datos", 2)
+    feed.publicar("Otro MUNDO", 3)
+    assert _textos(feed.buscar("mundo")) == ["Otro MUNDO", "Hola mundo"]
+
+
+def test_buscar_encuentra_la_palabra_dentro_del_texto():
+    """CA-06 (caso extremo): una palabra que aparece dentro de otra también coincide."""
+    feed = Feed()
+    feed.publicar("Hola mundo", 1)
+    assert _textos(feed.buscar("mun")) == ["Hola mundo"]
+
+
+def test_buscar_sin_coincidencias():
+    """CA-07: sin coincidencias, o con el feed vacío, no entrega nada y no lanza error."""
+    feed = Feed()
+    assert _textos(feed.buscar("hola")) == []
+    feed.publicar("Hola mundo", 1)
+    assert _textos(feed.buscar("adios")) == []
+
+
+def test_buscar_palabra_invalida():
+    """CA-08: una palabra vacía o que no es texto lanza BusquedaInvalidaError al llamar a buscar."""
+    feed = Feed()
+    feed.publicar("Hola", 1)
+    for palabra in ("", None, 5):
+        with pytest.raises(BusquedaInvalidaError):
+            feed.buscar(palabra)
+    assert feed.cantidad() == 1
+
+
+def test_buscar_no_modifica_el_feed():
+    """CA-09: buscar no cambia la posición actual ni cantidad()."""
+    feed = Feed()
+    for texto in ("A uno", "B dos", "C tres"):
+        feed.publicar(texto, 1)
+    feed.avanzar()
+    _textos(feed.buscar("dos"))
+    assert feed.actual().texto == "B dos"
+    assert feed.cantidad() == 3
+
+
+def test_buscar_en_muchas_publicaciones():
+    """CA-06 (caso extremo): entre 2 000 publicaciones, 20 contienen la palabra y salen en orden."""
+    feed = Feed()
+    for i in range(2_000):
+        texto = f"especial {i}" if i % 100 == 0 else f"normal {i}"
+        feed.publicar(texto, i)
+    encontrados = _textos(feed.buscar("especial"))
+    assert len(encontrados) == 20
+    assert encontrados[0] == "especial 1900"
+    assert encontrados[-1] == "especial 0"
