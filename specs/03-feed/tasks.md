@@ -5,3 +5,4 @@
 | T-02 | Feed.publicar con validación, con pruebas | CA-05 | Completada |
 | T-03 | Feed.actual, avanzar, retroceder y cantidad, con pruebas | CA-01, CA-02, CA-03, CA-04 | Completada |
 | T-04 | Integrar el feed al menú de main.py | HU-03 | Pendiente |
+| T-05 | ListaDoble.recorrer y Feed.buscar, con pruebas | CA-06 a CA-09 | Hecha |

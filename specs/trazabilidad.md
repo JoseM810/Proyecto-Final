@@ -41,3 +41,7 @@
 | 06-red | CA-10 | test_recomendar_sin_repetidos_ni_conocidos | dominio/red.py · recomendar() |
 | 06-red | CA-11 | test_recomendar_sin_candidatos | dominio/red.py · recomendar() |
 | 06-red | CA-12 | test_recomendar_orden | dominio/red.py · recomendar() |
+| 03-feed | CA-06 | test_buscar_por_palabra | dominio/feed.py · buscar() |
+| 03-feed | CA-07 | test_buscar_sin_coincidencias | dominio/feed.py · buscar() |
+| 03-feed | CA-08 | test_buscar_palabra_invalida | dominio/feed.py · buscar() |
+| 03-feed | CA-09 | test_buscar_no_modifica_el_feed | dominio/feed.py · buscar() |g
