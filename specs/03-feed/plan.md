@@ -21,6 +21,7 @@ sus dos vecinos, moverse en cualquier sentido es O(1).
 | avanzar | O(1) | O(1) | Mover el cursor al siguiente |
 | retroceder | O(1) | O(1) | Mover el cursor al anterior |
 | cantidad | O(1) | O(1) | Se lleva un contador |
+| buscar | O(n·m) | O(1) | Recorre las n publicaciones una vez y compara cada texto de longitud m con la palabra |
 
 ## 4. Diseño interno
 - NodoDoble (estructuras/nodo_doble.py): valor, anterior, siguiente
@@ -36,6 +37,11 @@ sus dos vecinos, moverse en cualquier sentido es O(1).
   nodos alcanzables desde la cabeza; actual es None si y solo si
   tamanio es 0
 - No se usa list, dict, set ni deque
+- ListaDoble.recorrer: generador de la cabeza a la cola que no mueve el
+  cursor; Feed.buscar lo usa y entrega las publicaciones que contienen la
+  palabra (comparando en minúsculas). Feed.buscar valida la palabra y
+  devuelve un generador interno, para que el error se lance al llamarla.
+- Excepción nueva en estructuras/errores.py: BusquedaInvalidaError
 
 ## 5. Riesgos técnicos
 | Riesgo | Impacto | Mitigación |
