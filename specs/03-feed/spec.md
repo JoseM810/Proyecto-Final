@@ -1,5 +1,5 @@
 # Especificación — Feed de publicaciones
-**Versión:** 1.0 · **Fecha:** 5 nov 2026 · **Autor:** Jose Miguel Alvarez Ortega
+**Versión:** 1.1 · **Fecha:** 7 nov 2026 · **Autor:** Jose Miguel Alvarez Ortega
 
 ## 1. Propósito
 Guarda las publicaciones de una persona de la red y permite recorrerlas
@@ -39,6 +39,14 @@ por usuario. Soporta la historia HU-03.
 - **Errores:** InicioDelFeedError si la actual ya es la más reciente o el
   feed está vacío
 
+### `buscar(palabra)`
+- **Precondiciones:** palabra es un texto no vacío
+- **Postcondiciones:** entrega las publicaciones cuyo texto contiene la
+  palabra, sin distinguir mayúsculas de minúsculas, de la más reciente a
+  la más antigua. No modifica el feed ni la posición actual.
+- **Errores:** BusquedaInvalidaError si palabra no es un texto no vacío;
+  se lanza al llamar a buscar, no al recorrer los resultados
+
 ### `cantidad()`
 - **Postcondiciones:** devuelve cuántas publicaciones hay. No modifica nada.
 
@@ -54,12 +62,18 @@ por usuario. Soporta la historia HU-03.
 | CA-03 | Retroceder en la más reciente lanza InicioDelFeedError y avanzar en la más antigua lanza FinDelFeedError; la posición no cambia | test_limites_del_feed |
 | CA-04 | Con el feed vacío, actual() devuelve None, cantidad() es 0 y no se lanza error | test_feed_vacio |
 | CA-05 | Publicar con texto vacío o fecha inválida lanza PublicacionInvalidaError y no cambia cantidad() | test_publicar_invalida |
+| CA-06 | buscar(palabra) entrega solo las publicaciones cuyo texto contiene la palabra, sin distinguir mayúsculas, de la más reciente a la más antigua | test_buscar_por_palabra |
+| CA-07 | buscar sin coincidencias, o con el feed vacío, no entrega nada y no lanza error | test_buscar_sin_coincidencias |
+| CA-08 | buscar con una palabra vacía o que no es texto lanza BusquedaInvalidaError al llamarla y no cambia nada | test_buscar_palabra_invalida |
+| CA-09 | buscar no modifica la posición actual ni cantidad() | test_buscar_no_modifica_el_feed |
 
 ## 6. Casos extremos considerados
 - Feed vacío · una sola publicación · publicar estando en medio del
   recorrido (la nueva pasa a ser la actual) · muchas publicaciones
+· búsqueda sin coincidencias · palabra que aparece dentro de otra.
 
 ## 7. Historial de cambios
 | Versión | Fecha | Cambio | Motivo |
 |---------|-------|--------|--------|
 | 1.0 | 5 nov 2026 | Versión inicial | — |
+| 1.1 | 7 nov 2026 | Se agrega buscar(palabra) con CA-06 a CA-09 | HU-05 CA-04 exige buscar publicaciones por palabra y la v1.0 no lo cubría |
