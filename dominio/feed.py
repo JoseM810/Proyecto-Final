@@ -85,7 +85,7 @@ class Feed:
         for publicacion in self._lista.recorrer():
             if palabra_minuscula in publicacion.texto.lower():
                 yield publicacion
-                
+
     def cantidad(self):
         """Cantidad de publicaciones. Tiempo O(1), espacio O(1)."""
         return self._lista.tamanio()
