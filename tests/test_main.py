@@ -87,3 +87,42 @@ def test_listar_usuarios_muestra_contenido():
     assert "usuario0000" in texto
     assert "usuario0099" in texto
     assert "Total: 100 usuarios" in texto
+
+
+def test_seleccionar_usuario_existente():
+    """M-04 HU-05 CA-01: Seleccionar usuario existente lo establece como activo."""
+    sistema = SistemaRed()
+    main.cargar_usuarios_iniciales(sistema)
+    with patch("builtins.input", return_value="usuario0000"):
+        usuario = main.seleccionar_usuario(sistema)
+    assert usuario is not None
+    assert usuario.username == "usuario0000"
+    assert usuario.id == 0
+
+
+def test_seleccionar_usuario_inexistente():
+    """M-04 HU-05 CA-02: Seleccionar usuario inexistente retorna None y muestra mensaje."""
+    sistema = SistemaRed()
+    main.cargar_usuarios_iniciales(sistema)
+    salida = io.StringIO()
+    with patch("builtins.input", return_value="usuario_inexistente"):
+        with patch("sys.stdout", salida):
+            usuario = main.seleccionar_usuario(sistema)
+    texto = salida.getvalue()
+    assert usuario is None
+    assert "usuario_inexistente" in texto
+    assert "no existe" in texto
+
+
+def test_seleccionar_usuario_conserva_activo():
+    """M-04 HU-05 CA-01: Seleccionar usuario inexistente no reemplaza al activo."""
+    sistema = SistemaRed()
+    main.cargar_usuarios_iniciales(sistema)
+    with patch("builtins.input", return_value="usuario0000"):
+        usuario_activo = main.seleccionar_usuario(sistema)
+    assert usuario_activo is not None
+    assert usuario_activo.username == "usuario0000"
+    with patch("builtins.input", return_value="usuario_inexistente"):
+        resultado = main.seleccionar_usuario(sistema)
+    assert resultado is None
+    assert usuario_activo.username == "usuario0000"

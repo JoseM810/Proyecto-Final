@@ -77,6 +77,20 @@ def listar_usuarios(sistema):
     print(f"Total: {len(usuarios)} usuarios")
 
 
+def seleccionar_usuario(sistema):
+    """Selecciona un usuario como activo para la sesión.
+
+    Complejidad: Tiempo O(h), espacio O(1), con h la altura del BST.
+    """
+    username = input("Ingrese el nombre de usuario: ").strip()
+    usuario = sistema.buscar_usuario_por_nombre(username)
+    if usuario is None:
+        print(f"\nEl usuario '{username}' no existe.")
+        return None
+    print(f"\nUsuario activo: {usuario.nombre_visible} (@{usuario.username})")
+    return usuario
+
+
 def main():
     """Función principal de la aplicación de consola.
 
@@ -96,6 +110,10 @@ def main():
             salir()
         elif opcion == "1":
             listar_usuarios(sistema)
+        elif opcion == "2":
+            usuario_seleccionado = seleccionar_usuario(sistema)
+            if usuario_seleccionado is not None:
+                usuario_activo = usuario_seleccionado
         else:
             opcion_no_implementada(opcion)
 
