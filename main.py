@@ -8,6 +8,9 @@ import sys
 
 from dominio.sistema_red import SistemaRed
 from dominio.generador_usuarios import GeneradorUsuarios
+from dominio.feed import PublicacionInvalidaError, FinDelFeedError, InicioDelFeedError, PublicacionNoEncontradaError
+from estructuras.errores import ComentarioInvalidoError
+from dominio.feed import PublicacionInvalidaError, FinDelFeedError, InicioDelFeedError
 
 
 def mostrar_menu():
@@ -91,6 +94,133 @@ def seleccionar_usuario(sistema):
     return usuario
 
 
+def buscar_usuario(sistema):
+    """Busca un usuario por nombre y muestra su información.
+
+    Complejidad: Tiempo O(h), espacio O(1), con h la altura del BST.
+    """
+    username = input("Ingrese el nombre de usuario: ").strip()
+    usuario = sistema.buscar_usuario_por_nombre(username)
+    if usuario is None:
+        print(f"\nEl usuario '{username}' no existe.")
+        return None
+    print(f"\nUsuario encontrado: {usuario.nombre_visible} (@{usuario.username}), ID: {usuario.id}")
+    return usuario
+
+
+def publicar(usuario_activo):
+    """Publica en el feed del usuario activo.
+
+    Complejidad: Tiempo O(1), espacio O(1).
+    """
+    if usuario_activo is None:
+        print("\nNo hay usuario activo seleccionado.")
+        return
+    texto = input("Texto de la publicación: ").strip()
+    if not texto:
+        print("\nEl texto no puede estar vacío.")
+        return
+    fecha_str = input("Fecha (entero >= 0): ").strip()
+    try:
+        fecha = int(fecha_str)
+    except ValueError:
+        print("\nFecha inválida: debe ser un entero >= 0.")
+        return
+    if fecha < 0:
+        print("\nFecha inválida: debe ser un entero >= 0.")
+        return
+    try:
+        usuario_activo.publicar(texto, fecha)
+        print(f"\nPublicación creada: '{texto}'")
+    except PublicacionInvalidaError as e:
+        print(f"\nError al publicar: {e}")
+
+
+def recorrer_feed(usuario_activo):
+    """Muestra y navega el feed del usuario activo.
+
+    Complejidad: Tiempo O(1) por operación de navegación, espacio O(1).
+    """
+    if usuario_activo is None:
+        print("\nNo hay usuario activo seleccionado.")
+        return
+    feed = usuario_activo.feed
+    if feed.cantidad() == 0:
+        print("\nNo hay publicaciones en tu feed.")
+        return
+    print("\n--- Tu feed ---")
+    print(f"Publicación actual: {feed.actual().texto}")
+    while True:
+        opcion = input("(a)vanzar, (r)etroceder, (s)alir: ").strip().lower()
+        if opcion == "a":
+            try:
+                feed.avanzar()
+                print(f"Publicación actual: {feed.actual().texto}")
+            except FinDelFeedError:
+                print("No hay publicaciones más antiguas.")
+        elif opcion == "r":
+            try:
+                feed.retroceder()
+                print(f"Publicación actual: {feed.actual().texto}")
+            except InicioDelFeedError:
+                print("No hay publicaciones más recientes.")
+        elif opcion == "s":
+            break
+        else:
+            print("Opción inválida.")
+
+
+def comentar_publicacion(usuario_activo, sistema):
+    """Comenta en una publicación del feed del usuario activo.
+
+    Complejidad: Tiempo O(n) para buscar la publicación + O(1) para comentar,
+    espacio O(1), con n la cantidad de publicaciones en el feed.
+    """
+    if usuario_activo is None:
+        print("\nNo hay usuario activo seleccionado.")
+        return
+    id_str = input("ID de la publicación: ").strip()
+    try:
+        id_publicacion = int(id_str)
+    except ValueError:
+        print("\nID inválido: debe ser un entero.")
+        return
+    texto = input("Texto del comentario: ").strip()
+    if not texto:
+        print("\nEl texto no puede estar vacío.")
+        return
+    try:
+        publicacion = sistema.obtener_por_id(id_publicacion)
+    except PublicacionNoEncontradaError:
+        print(f"\nNo existe la publicación con ID {id_publicacion}.")
+        return
+    try:
+        publicacion.hilo.comentar(usuario_activo.nombre_visible, texto)
+        print(f"\nComentario agregado a la publicación {id_publicacion}.")
+    except ComentarioInvalidoError as e:
+        print(f"\nError al comentar: {e}")
+
+
+def ver_comentarios_publicacion(sistema, id_publicacion):
+    """Muestra los comentarios y respuestas de una publicación.
+
+    Complejidad: Tiempo O(n), espacio O(n), con n la cantidad de comentarios.
+    """
+    try:
+        publicacion = sistema.obtener_por_id(id_publicacion)
+    except PublicacionNoEncontradaError:
+        print(f"\nNo existe la publicación con ID {id_publicacion}.")
+        return
+    hilo = publicacion.hilo
+    if hilo.cantidad() == 0:
+        print(f"\nLa publicación {id_publicacion} no tiene comentarios.")
+        return
+    print(f"\n--- Comentarios de la publicación {id_publicacion} ---")
+    for comentario in hilo.recorrer():
+        indentacion = "  " * comentario.profundidad
+        print(f"{indentacion}[{comentario.id}] {comentario.autor}: {comentario.texto}")
+
+
 def main():
     """Función principal de la aplicación de consola.
 
@@ -114,6 +244,22 @@ def main():
             usuario_seleccionado = seleccionar_usuario(sistema)
             if usuario_seleccionado is not None:
                 usuario_activo = usuario_seleccionado
+        elif opcion == "3":
+            buscar_usuario(sistema)
+        elif opcion == "4":
+            publicar(usuario_activo)
+        elif opcion == "5":
+            recorrer_feed(usuario_activo)
+        elif opcion == "10":
+            comentar_publicacion(usuario_activo, sistema)
+        elif opcion == "12":
+            id_str = input("ID de la publicación: ").strip()
+            try:
+                id_publicacion = int(id_str)
+            except ValueError:
+                print("\nID inválido: debe ser un entero.")
+                continue
+            ver_comentarios_publicacion(sistema, id_publicacion)
         else:
             opcion_no_implementada(opcion)
 

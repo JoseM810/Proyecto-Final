@@ -126,3 +126,31 @@ def test_seleccionar_usuario_conserva_activo():
         resultado = main.seleccionar_usuario(sistema)
     assert resultado is None
     assert usuario_activo.username == "usuario0000"
+
+
+def test_buscar_usuario_existente():
+    """M-05 HU-05 CA-01: Buscar usuario existente muestra su información."""
+    sistema = SistemaRed()
+    main.cargar_usuarios_iniciales(sistema)
+    salida = io.StringIO()
+    with patch("builtins.input", return_value="usuario0000"):
+        with patch("sys.stdout", salida):
+            usuario = main.buscar_usuario(sistema)
+    texto = salida.getvalue()
+    assert usuario is not None
+    assert usuario.username == "usuario0000"
+    assert "usuario0000" in texto
+
+
+def test_buscar_usuario_inexistente():
+    """M-05 HU-05 CA-02: Buscar usuario inexistente devuelve None y muestra mensaje."""
+    sistema = SistemaRed()
+    main.cargar_usuarios_iniciales(sistema)
+    salida = io.StringIO()
+    with patch("builtins.input", return_value="usuario_inexistente"):
+        with patch("sys.stdout", salida):
+            usuario = main.buscar_usuario(sistema)
+    texto = salida.getvalue()
+    assert usuario is None
+    assert "usuario_inexistente" in texto
+    assert "no existe" in texto

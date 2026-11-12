@@ -1,31 +1,43 @@
 """Feed de publicaciones de una persona de la red."""
+from dominio.hilo_comentarios import HiloComentarios
 from estructuras.errores import (
     FinDelFeedError,
     InicioDelFeedError,
     PublicacionInvalidaError,
+    PublicacionNoEncontradaError,
     BusquedaInvalidaError,
 )
 from estructuras.lista_doble import ListaDoble
 
 
 class Publicacion:
-    """Registro de lo que se publicó (texto) y cuándo (fecha, día de la simulación)."""
+    """Registro de lo que se publicó (texto) y cuándo (fecha, día de la simulación).
 
-    __slots__ = ("texto", "fecha")
+    Cada publicación tiene un identificador entero asignado por el feed y su
+    propio hilo de comentarios asociado.
+    """
 
-    def __init__(self, texto, fecha):
+    __slots__ = ("id", "texto", "fecha", "hilo")
+
+    def __init__(self, id_publicacion, texto, fecha):
+        self.id = id_publicacion
         self.texto = texto
         self.fecha = fecha
+        self.hilo = HiloComentarios()
 
 
 class Feed:
     """Guarda las publicaciones en una ListaDoble, la más reciente primero.
+
+    Cada publicación tiene un identificador entero asignado por el feed y su
+    propio hilo de comentarios asociado.
 
     Cumple la spec 03-feed v1.0.
     """
 
     def __init__(self):
         self._lista = ListaDoble()
+        self._siguiente_id = 1
 
     def publicar(self, texto, fecha):
         """Agrega la publicación como la más reciente y la deja como actual.
@@ -38,7 +50,22 @@ class Feed:
             raise PublicacionInvalidaError("el texto debe ser no vacío")
         if not isinstance(fecha, int) or isinstance(fecha, bool) or fecha < 0:
             raise PublicacionInvalidaError("la fecha debe ser un entero >= 0")
-        self._lista.insertar_al_inicio(Publicacion(texto, fecha))
+        publicacion = Publicacion(self._siguiente_id, texto, fecha)
+        self._siguiente_id += 1
+        self._lista.insertar_al_inicio(publicacion)
+
+    def obtener_por_id(self, id_publicacion):
+        """Devuelve la publicación con el identificador dado.
+
+        Tiempo O(n), espacio O(1), con n la cantidad de publicaciones.
+        Lanza PublicacionNoEncontradaError si no existe.
+        """
+        if not isinstance(id_publicacion, int) or isinstance(id_publicacion, bool):
+            raise PublicacionNoEncontradaError("el ID debe ser un entero")
+        for p in self._lista.recorrer():
+            if p.id == id_publicacion:
+                return p
+        raise PublicacionNoEncontradaError("no existe una publicación con ese ID")
 
     def actual(self):
         """Publicación en la posición actual, o None si el feed está vacío.

@@ -7,6 +7,7 @@ from estructuras.errores import (
     FinDelFeedError,
     InicioDelFeedError,
     PublicacionInvalidaError,
+    PublicacionNoEncontradaError,
 )
 
 
@@ -195,3 +196,44 @@ def test_buscar_en_muchas_publicaciones():
     assert len(encontrados) == 20
     assert encontrados[0] == "especial 1900"
     assert encontrados[-1] == "especial 0"
+
+
+# --- IDs de publicación ---
+def test_ids_secueneciales():
+    """Cada publicación obtiene un ID entero secuencial a partir de 1."""
+    feed = Feed()
+    feed.publicar("A", 1)
+    feed.publicar("B", 2)
+    feed.publicar("C", 3)
+    assert feed.obtener_por_id(1).texto == "A"
+    assert feed.obtener_por_id(2).texto == "B"
+    assert feed.obtener_por_id(3).texto == "C"
+
+
+def test_hilo_independiente_por_publicacion():
+    """Cada publicación tiene su propio HiloComentarios independiente."""
+    feed = Feed()
+    feed.publicar("primera", 1)
+    feed.publicar("segunda", 2)
+    p1 = feed.obtener_por_id(1)
+    p2 = feed.obtener_por_id(2)
+    assert p1.hilo is not p2.hilo
+    p1.hilo.comentar("autor", "comentario en p1")
+    assert p2.hilo.cantidad() == 0
+
+
+def test_obtener_por_id_existente():
+    """Obtener por ID devuelve la publicación correcta."""
+    feed = Feed()
+    feed.publicar("primera", 1)
+    feed.publicar("segunda", 2)
+    p = feed.obtener_por_id(2)
+    assert p.texto == "segunda"
+
+
+def test_obtener_por_id_inexistente():
+    """Buscar por ID inexistente lanza PublicacionNoEncontradaError."""
+    feed = Feed()
+    feed.publicar("solo una", 1)
+    with pytest.raises(PublicacionNoEncontradaError):
+        feed.obtener_por_id(99)

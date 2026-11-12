@@ -59,3 +59,7 @@ class AutoSeguimientoError(Exception):
 
 class BusquedaInvalidaError(Exception):
     """La palabra de búsqueda no es un texto no vacío."""
+
+
+class PublicacionNoEncontradaError(Exception):
+    """No existe una publicación con el identificador indicado."""

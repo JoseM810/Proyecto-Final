@@ -50,9 +50,17 @@ por usuario. Soporta la historia HU-03.
 ### `cantidad()`
 - **Postcondiciones:** devuelve cuántas publicaciones hay. No modifica nada.
 
+### `obtener_por_id(id_publicacion)`
+- **Precondiciones:** id_publicacion es un entero válido
+- **Postcondiciones:** devuelve la publicación con ese identificador entero. No modifica el feed.
+- **Errores:** PublicacionNoEncontradaError si no existe una publicación con ese ID
+- **Complejidad:** Tiempo O(n), espacio O(1), con n la cantidad de publicaciones
+
 ## 4. Invariantes
 - INV-01: cantidad() >= 0 en todo momento
 - INV-02: actual() es None si y solo si cantidad() es 0
+- INV-03: cada publicación tiene un identificador entero único asignado por el feed
+- INV-04: cada publicación tiene su propio hilo de comentarios asociado
 
 ## 5. Criterios de aceptación
 | ID | Criterio | Verificable mediante |
@@ -66,14 +74,21 @@ por usuario. Soporta la historia HU-03.
 | CA-07 | buscar sin coincidencias, o con el feed vacío, no entrega nada y no lanza error | test_buscar_sin_coincidencias |
 | CA-08 | buscar con una palabra vacía o que no es texto lanza BusquedaInvalidaError al llamarla y no cambia nada | test_buscar_palabra_invalida |
 | CA-09 | buscar no modifica la posición actual ni cantidad() | test_buscar_no_modifica_el_feed |
+| CA-10 | Cada publicación tiene un identificador entero único y consecutivo asignado por el feed | test_ids_secueneciales |
+| CA-11 | Cada publicación tiene su propio hilo de comentarios independiente | test_hilo_independiente_por_publicacion |
+| CA-12 | Obtener por ID existente devuelve la publicación correcta | test_obtener_por_id_existente |
+| CA-13 | Obtener por ID inexistente lanza PublicacionNoEncontradaError | test_obtener_por_id_inexistente |
 
 ## 6. Casos extremos considerados
 - Feed vacío · una sola publicación · publicar estando en medio del
   recorrido (la nueva pasa a ser la actual) · muchas publicaciones
-· búsqueda sin coincidencias · palabra que aparece dentro de otra.
+· búsqueda sin coincidencias · palabra que aparece dentro de otra
+· publicación con ID 1 (primera) · ID mayor que la cantidad
+· ID inexistente
 
 ## 7. Historial de cambios
 | Versión | Fecha | Cambio | Motivo |
 |---------|-------|--------|--------|
 | 1.0 | 5 nov 2026 | Versión inicial | — |
 | 1.1 | 7 nov 2026 | Se agrega buscar(palabra) con CA-06 a CA-09 | HU-05 CA-04 exige buscar publicaciones por palabra y la v1.0 no lo cubría |
+| 1.2 | 12 nov 2026 | Cada publicación tiene un ID entero secuencial y su propio HiloComentarios. Agrega obtener_por_id con CA-10 a CA-13 | HU-06 requiere vincular comentarios a publicaciones específicas mediante ID |

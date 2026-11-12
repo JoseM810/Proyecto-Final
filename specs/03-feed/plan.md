@@ -22,29 +22,35 @@ sus dos vecinos, moverse en cualquier sentido es O(1).
 | retroceder | O(1) | O(1) | Mover el cursor al anterior |
 | cantidad | O(1) | O(1) | Se lleva un contador |
 | buscar | O(n·m) | O(1) | Recorre las n publicaciones una vez y compara cada texto de longitud m con la palabra |
+| obtener_por_id | O(n) | O(1) | Recorre las n publicaciones una vez comparando el ID |
 
 ## 4. Diseño interno
 - NodoDoble (estructuras/nodo_doble.py): valor, anterior, siguiente
 - ListaDoble (estructuras/lista_doble.py): cabeza, actual, tamanio;
   operaciones insertar_al_inicio, actual, avanzar, retroceder, tamanio.
   Insertar deja el cursor en la nueva cabeza.
-- Publicacion (dominio/feed.py): texto y fecha
-- Feed (dominio/feed.py): valida los datos y usa una ListaDoble
+- Publicacion (dominio/feed.py): id, texto, fecha, hilo (HiloComentarios)
+- Feed (dominio/feed.py): _lista (ListaDoble), _siguiente_id (contador entero)
+  - Insertar deja el cursor en la nueva cabeza.
+- HiloComentarios (dominio/hilo_comentarios.py): árbol general de comentarios por publicación
 - Excepciones en estructuras/errores.py: PublicacionInvalidaError,
-  FinDelFeedError, InicioDelFeedError
+  FinDelFeedError, InicioDelFeedError, BusquedaInvalidaError,
+  PublicacionNoEncontradaError
 - Invariante de representación: cabeza.anterior es None; para todo nodo n
   con n.siguiente != None se cumple n.siguiente.anterior == n; tamanio =
   nodos alcanzables desde la cabeza; actual es None si y solo si
-  tamanio es 0
+  tamanio es 0; cada Publicacion tiene un ID único y su propio HiloComentarios
 - No se usa list, dict, set ni deque
 - ListaDoble.recorrer: generador de la cabeza a la cola que no mueve el
   cursor; Feed.buscar lo usa y entrega las publicaciones que contienen la
   palabra (comparando en minúsculas). Feed.buscar valida la palabra y
-  devuelve un generador interno, para que el error se lance al llamarla.
-- Excepción nueva en estructuras/errores.py: BusquedaInvalidaError
+  devuelve un generador interno, para que el error se lance al llamarlo.
+- Excepción nueva en estructuras/errores.py: BusquedaInvalidaError,
+  PublicacionNoEncontradaError
 
 ## 5. Riesgos técnicos
 | Riesgo | Impacto | Mitigación |
 |---|---|---|
 | Al insertar, olvidar actualizar anterior de la cabeza vieja | Alto | Prueba que avanza y retrocede tras varias inserciones |
 | Mover el cursor más allá de los extremos | Medio | Verificar el vecino antes de moverlo; CA-03 |
+| Olvidar asignar ID o hilo a una nueva publicación | Medio | Prueba que cada publicación tiene ID único y hilo independiente |
