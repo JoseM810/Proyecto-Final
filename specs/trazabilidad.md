@@ -44,4 +44,15 @@
 | 03-feed | CA-06 | test_buscar_por_palabra | dominio/feed.py · buscar() |
 | 03-feed | CA-07 | test_buscar_sin_coincidencias | dominio/feed.py · buscar() |
 | 03-feed | CA-08 | test_buscar_palabra_invalida | dominio/feed.py · buscar() |
-| 03-feed | CA-09 | test_buscar_no_modifica_el_feed | dominio/feed.py · buscar() |g
+| 03-feed | CA-09 | test_buscar_no_modifica_el_feed | dominio/feed.py · buscar() |
+| usuario | CA-01 | test_usuario_tiene_id_y_campos | dominio/usuario.py · __init__ |
+| usuario | CA-02 | test_usuario_tiene_feed_vacio_inicialmente | dominio/usuario.py · feed |
+| usuario | CA-03 | test_usuario_tiene_bandeja_vacia_inicialmente | dominio/usuario.py · bandeja |
+| generador-usuarios | CA-01 | test_generador_produce_mismos_usuarios_con_misma_semilla | dominio/generador_usuarios.py · generar |
+| generador-usuarios | CA-02 | test_generador_produce_al_menos_100_usuarios | dominio/generador_usuarios.py · generar |
+| generador-usuarios | CA-03 | test_generador_nombres_unicos | dominio/generador_usuarios.py · generar |
+| sistema-red | CA-01 | test_registrar_usuario | dominio/sistema_red.py · registrar_usuario |
+| sistema-red | CA-02 | test_buscar_usuario_por_nombre | dominio/sistema_red.py · buscar_usuario_por_nombre |
+| sistema-red | CA-03 | test_seguir_usuario_genera_notificacion | dominio/sistema_red.py · seguir |
+| sistema-red | CA-03 | test_seguir_repetido_no_genera_notificacion_duplicada | dominio/sistema_red.py · seguir |
+| sistema-red | CA-03 | test_seguir_usuario_inexistente_lanza_error | dominio/sistema_red.py · seguir |
