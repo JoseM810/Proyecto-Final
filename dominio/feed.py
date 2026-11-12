@@ -116,3 +116,10 @@ class Feed:
     def cantidad(self):
         """Cantidad de publicaciones. Tiempo O(1), espacio O(1)."""
         return self._lista.tamanio()
+
+    def recorrer(self):
+        """Entrega las publicaciones de la más reciente a la más antigua.
+
+        Es un generador. Tiempo O(n), espacio O(1).
+        """
+        return self._lista.recorrer()

@@ -154,3 +154,100 @@ def test_buscar_usuario_inexistente():
     assert usuario is None
     assert "usuario_inexistente" in texto
     assert "no existe" in texto
+
+
+def test_responder_comentario_existente():
+    """M-07 HU-04 CA-01: Responder a un comentario existente agrega la respuesta."""
+    sistema = SistemaRed()
+    main.cargar_usuarios_iniciales(sistema)
+    u_activo = sistema.obtener_usuario_por_id(0)
+    u_activo.publicar("Publicación de prueba", 1)
+    publicacion = u_activo.feed.actual()
+    publicacion.hilo.comentar("Autor prueba", "Comentario existente")
+    salida = io.StringIO()
+    with patch("builtins.input", side_effect=["1", "1", "Texto de respuesta"]):
+        with patch("sys.stdout", salida):
+            main.responder_comentario(u_activo, sistema)
+    texto = salida.getvalue()
+    assert "Respuesta agregada" in texto
+    assert "comentario 1" in texto
+    assert "publicación 1" in texto
+
+
+def test_responder_comentario_padre_inexistente():
+    """M-07 HU-04 CA-03: Responder a comentario inexistente lanza error."""
+    sistema = SistemaRed()
+    main.cargar_usuarios_iniciales(sistema)
+    u_activo = sistema.obtener_usuario_por_id(0)
+    u_activo.publicar("Publicación de prueba", 1)
+    publicacion = u_activo.feed.actual()
+    publicacion.hilo.comentar("Autor prueba", "Comentario existente")
+    salida = io.StringIO()
+    with patch("builtins.input", side_effect=["1", "999", "Texto de respuesta"]):
+        with patch("sys.stdout", salida):
+            main.responder_comentario(u_activo, sistema)
+    texto = salida.getvalue()
+    assert "no existe el comentario" in texto.lower()
+
+
+def test_responder_comentario_texto_vacio():
+    """M-07 HU-04 CA-01: Responder con texto vacío se rechaza."""
+    sistema = SistemaRed()
+    main.cargar_usuarios_iniciales(sistema)
+    u_activo = sistema.obtener_usuario_por_id(0)
+    u_activo.publicar("Publicación de prueba", 1)
+    publicacion = u_activo.feed.actual()
+    publicacion.hilo.comentar("Autor prueba", "Comentario existente")
+    salida = io.StringIO()
+    with patch("builtins.input", side_effect=["1", "1", ""]):
+        with patch("sys.stdout", salida):
+            main.responder_comentario(u_activo, sistema)
+    texto = salida.getvalue()
+    assert "El texto no puede estar vacío" in texto
+
+
+def test_ver_comentarios_publicacion_con_comentarios():
+    """M-08 HU-04 CA-02: Ver comentarios y respuestas de una publicación."""
+    sistema = SistemaRed()
+    main.cargar_usuarios_iniciales(sistema)
+    u_activo = sistema.obtener_usuario_por_id(0)
+    u_activo.publicar("Publicación de prueba", 1)
+    publicacion = u_activo.feed.actual()
+    publicacion.hilo.comentar("Autor prueba", "Comentario 1")
+    publicacion.hilo.comentar("Autor prueba", "Comentario 2")
+    publicacion.hilo.responder(1, "Autor prueba", "Respuesta al comentario 1")
+    salida = io.StringIO()
+    with patch("builtins.input", return_value="1"):
+        with patch("sys.stdout", salida):
+            main.ver_comentarios_publicacion(sistema, 1)
+    texto = salida.getvalue()
+    assert "Comentarios de la publicación 1" in texto
+    assert "Comentario 1" in texto
+    assert "Comentario 2" in texto
+    assert "Respuesta al comentario 1" in texto
+
+
+def test_ver_comentarios_publicacion_vacia():
+    """M-08 HU-04 CA-02: Publicación sin comentarios muestra mensaje vacío."""
+    sistema = SistemaRed()
+    main.cargar_usuarios_iniciales(sistema)
+    u_activo = sistema.obtener_usuario_por_id(0)
+    u_activo.publicar("Publicación sin comentarios", 1)
+    salida = io.StringIO()
+    with patch("builtins.input", return_value="1"):
+        with patch("sys.stdout", salida):
+            main.ver_comentarios_publicacion(sistema, 1)
+    texto = salida.getvalue()
+    assert "no tiene comentarios" in texto.lower()
+
+
+def test_ver_comentarios_publicacion_inexistente():
+    """M-08 HU-04 CA-02: Publicación inexistente devuelve mensaje de error."""
+    sistema = SistemaRed()
+    main.cargar_usuarios_iniciales(sistema)
+    salida = io.StringIO()
+    with patch("builtins.input", return_value="1"):
+        with patch("sys.stdout", salida):
+            main.ver_comentarios_publicacion(sistema, 1)
+    texto = salida.getvalue()
+    assert "no existe" in texto.lower()

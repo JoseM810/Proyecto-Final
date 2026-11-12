@@ -9,7 +9,7 @@ import sys
 from dominio.sistema_red import SistemaRed
 from dominio.generador_usuarios import GeneradorUsuarios
 from dominio.feed import PublicacionInvalidaError, FinDelFeedError, InicioDelFeedError, PublicacionNoEncontradaError
-from estructuras.errores import ComentarioInvalidoError
+from estructuras.errores import ComentarioInvalidoError, ComentarioNoEncontradoError
 from dominio.feed import PublicacionInvalidaError, FinDelFeedError, InicioDelFeedError
 
 
@@ -221,6 +221,45 @@ def ver_comentarios_publicacion(sistema, id_publicacion):
         print(f"{indentacion}[{comentario.id}] {comentario.autor}: {comentario.texto}")
 
 
+def responder_comentario(usuario_activo, sistema):
+    """Responde a un comentario de una publicación.
+
+    Complejidad: Tiempo O(n) para buscar la publicación + O(1) para responder,
+    espacio O(1), con n la cantidad de publicaciones en el feed.
+    """
+    if usuario_activo is None:
+        print("\nNo hay usuario activo seleccionado.")
+        return
+    id_str = input("ID de la publicación: ").strip()
+    try:
+        id_publicacion = int(id_str)
+    except ValueError:
+        print("\nID inválido: debe ser un entero.")
+        return
+    try:
+        publicacion = sistema.obtener_por_id(id_publicacion)
+    except PublicacionNoEncontradaError:
+        print(f"\nNo existe la publicación con ID {id_publicacion}.")
+        return
+    id_str_padre = input("ID del comentario padre: ").strip()
+    try:
+        id_padre = int(id_str_padre)
+    except ValueError:
+        print("\nID inválido: debe ser un entero.")
+        return
+    texto = input("Texto de la respuesta: ").strip()
+    if not texto:
+        print("\nEl texto no puede estar vacío.")
+        return
+    try:
+        publicacion.hilo.responder(id_padre, usuario_activo.nombre_visible, texto)
+        print(f"\nRespuesta agregada al comentario {id_padre} de la publicación {id_publicacion}.")
+    except ComentarioNoEncontradoError:
+        print(f"\nNo existe el comentario con ID {id_padre}.")
+    except ComentarioInvalidoError as e:
+        print(f"\nError al responder: {e}")
+
+
 def main():
     """Función principal de la aplicación de consola.
 
@@ -252,6 +291,8 @@ def main():
             recorrer_feed(usuario_activo)
         elif opcion == "10":
             comentar_publicacion(usuario_activo, sistema)
+        elif opcion == "11":
+            responder_comentario(usuario_activo, sistema)
         elif opcion == "12":
             id_str = input("ID de la publicación: ").strip()
             try:

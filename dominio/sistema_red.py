@@ -8,7 +8,7 @@ existentes; las conecta mediante una capa de integración.
 from dominio.indice_usuarios import IndiceUsuarios
 from dominio.red import RedSeguimiento
 from dominio.usuario import Usuario
-from estructuras.errores import NombreDuplicadoError, UsuarioNoExisteError
+from estructuras.errores import NombreDuplicadoError, UsuarioNoExisteError, PublicacionNoEncontradaError
 
 
 class SistemaRed:
@@ -120,3 +120,17 @@ class SistemaRed:
             nombres_vistos.append(username)
         for username, nombre_visible, biografia in datos_usuarios:
             self.registrar_usuario(username, nombre_visible, biografia)
+
+    def obtener_por_id(self, id_publicacion):
+        """Busca una publicación por su ID en los feeds de todos los usuarios.
+
+        Complejidad: Tiempo O(n·m) donde n es la cantidad de usuarios y
+        m la cantidad de publicaciones por feed, espacio O(1).
+        Lanza PublicacionNoEncontradaError si no se encuentra.
+        """
+        for nombre in self._indice.listar():
+            usuario = self._indice.buscar(nombre)
+            for publicacion in usuario.feed.recorrer():
+                if publicacion.id == id_publicacion:
+                    return publicacion
+        raise PublicacionNoEncontradaError("no existe una publicación con ese ID")
