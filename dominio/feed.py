@@ -13,16 +13,17 @@ from estructuras.lista_doble import ListaDoble
 class Publicacion:
     """Registro de lo que se publicó (texto) y cuándo (fecha, día de la simulación).
 
-    Cada publicación tiene un identificador entero asignado por el feed y su
-    propio hilo de comentarios asociado.
+    Cada publicación tiene un identificador entero asignado por el feed, su
+    propio hilo de comentarios asociado y el autor que la escribió.
     """
 
-    __slots__ = ("id", "texto", "fecha", "hilo")
+    __slots__ = ("id", "texto", "fecha", "autor", "hilo")
 
-    def __init__(self, id_publicacion, texto, fecha):
+    def __init__(self, id_publicacion, texto, fecha, autor):
         self.id = id_publicacion
         self.texto = texto
         self.fecha = fecha
+        self.autor = autor
         self.hilo = HiloComentarios()
 
 
@@ -39,19 +40,25 @@ class Feed:
         self._lista = ListaDoble()
         self._siguiente_id = 1
 
-    def publicar(self, texto, fecha):
+    def publicar(self, texto, fecha, autor, id_publicacion=None):
         """Agrega la publicación como la más reciente y la deja como actual.
 
         Tiempo O(1), espacio O(1).
         Lanza PublicacionInvalidaError si texto no es un texto no vacío o si
         fecha no es un entero mayor o igual que 0.
+
+        Si se proporciona id_publicacion, se usa ese identificador en lugar de
+        generar uno automáticamente. Esto permite que SistemaRed asigne IDs
+        globales únicos en toda la red.
         """
         if not isinstance(texto, str) or texto == "":
             raise PublicacionInvalidaError("el texto debe ser no vacío")
         if not isinstance(fecha, int) or isinstance(fecha, bool) or fecha < 0:
             raise PublicacionInvalidaError("la fecha debe ser un entero >= 0")
-        publicacion = Publicacion(self._siguiente_id, texto, fecha)
-        self._siguiente_id += 1
+        if id_publicacion is None:
+            id_publicacion = self._siguiente_id
+            self._siguiente_id += 1
+        publicacion = Publicacion(id_publicacion, texto, fecha, autor)
         self._lista.insertar_al_inicio(publicacion)
 
     def obtener_por_id(self, id_publicacion):

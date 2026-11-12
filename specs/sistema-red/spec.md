@@ -36,7 +36,7 @@ seguir) y HU-08 (recomendaciones).
 ### `seguir(username_a, username_b)`
 - **Precondiciones:** username_a y username_b existen en el índice.
 - **Postcondiciones:** username_a empieza a seguir a username_b. Si la relación es nueva, genera una notificación NUEVO_SEGUIDOR para username_b.
-- **Errores:** UsuarioNoExisteError si alguno de los usuarios no existe.
+- **Errores:** UsuarioNoExisteError si alguno de los usuarios no existe. AutoSeguimientoError si username_a es igual a username_b.
 - **Complejidad:** Tiempo O(h + g), espacio O(1), con h la altura del BST y g el grado del usuario en el grafo.
 
 ### `dejar_de_seguir(username_a, username_b)`
@@ -61,6 +61,14 @@ seguir) y HU-08 (recomendaciones).
 - **Errores:** NombreDuplicadoError si hay nombres duplicados en los datos.
 - **Complejidad:** Tiempo O(n·h), espacio O(n).
 
+### `obtener_todas_publicaciones()`
+- **Precondiciones:** ninguna.
+- **Postcondiciones:** devuelve una lista con todas las publicaciones de todos los usuarios,
+  ordenadas por ID global descendente (más reciente primero). Cada publicación incluye
+  su ID global, autor y texto.
+- **Complejidad:** Tiempo O(n·m log m) donde n es la cantidad de usuarios y
+  m la cantidad de publicaciones por feed, espacio O(m·n).
+
 ## 4. Invariantes
 - INV-01: el id de cada Usuario coincide con su vértice en RedSeguimiento.
 - INV-02: los IDs son consecutivos desde 0 sin huecos.
@@ -78,6 +86,7 @@ seguir) y HU-08 (recomendaciones).
 - obtener_usuario_por_id con ID negativo devuelve None.
 - obtener_usuario_por_id con ID fuera de rango devuelve None.
 - Seguir repetido no duplica notificaciones.
+- Seguir a sí mismo lanza AutoSeguimientoError y no modifica el grafo.
 - Cargar con nombres duplicados lanza NombreDuplicadoError sin carga parcial.
 
 ## 7. Historial de cambios

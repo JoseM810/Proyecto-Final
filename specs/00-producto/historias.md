@@ -51,7 +51,7 @@ Como estudiante, quiero volver a la pantalla anterior, para no perderme al naveg
 | ID | Criterio de aceptación |
 |----|------------------------|
 | CA-01 | Tras visitar A, B y C, volver lleva a B y luego a A |
-| CA-02 | Volver sin pantallas previas avisa y no lanza error |
+| CA-02 | Volver sin pantallas previas lanza `NadaAtrasError`; el menú captura la excepción y muestra un aviso sin cerrar la aplicación |
 | CA-03 | Tras visitar A, B y C, volver (queda en B) y visitar D, volver lleva a B y C ya no es alcanzable |
 
 ## HU-07 · Notificaciones (F-07)

@@ -14,11 +14,13 @@ por usuario. Soporta la historia HU-03.
 
 ## 3. Operaciones
 
-### `publicar(texto, fecha)`
+### `publicar(texto, fecha, id_publicacion=None)`
 - **Precondiciones:** texto es un texto no vacío; fecha es un entero >= 0
-  (día de la simulación)
+  (día de la simulación); id_publicacion es un entero >= 0 opcional. Si se
+  omite, se asigna automáticamente desde el contador interno del feed.
 - **Postcondiciones:** la publicación es la más reciente del feed y pasa
-  a ser la posición actual
+  a ser la posición actual. Cada publicación tiene un identificador entero
+  único asignado.
 - **Errores:** PublicacionInvalidaError si texto o fecha no cumplen
 
 ### `actual()`

@@ -4,7 +4,7 @@ import pytest
 
 from dominio.generador_usuarios import GeneradorUsuarios
 from dominio.sistema_red import SistemaRed
-from estructuras.errores import UsuarioNoExisteError
+from estructuras.errores import UsuarioNoExisteError, AutoSeguimientoError
 
 
 def test_registrar_usuario():
@@ -79,6 +79,32 @@ def test_seguir_usuario_inexistente_lanza_error():
         sistema.seguir("inesistente0000", "ana0000")
 
 
+def test_seguirse_a_si_mismo_lanza_error():
+    """HU-02 CA-04: seguirse a sí mismo lanza AutoSeguimientoError."""
+    sistema = SistemaRed()
+    sistema.registrar_usuario("ana0000", "Ana")
+    with pytest.raises(AutoSeguimientoError):
+        sistema.seguir("ana0000", "ana0000")
+    # No se genera notificación ni se altera el grafo
+    ana = sistema.buscar_usuario_por_nombre("ana0000")
+    assert ana.cantidad_notificaciones() == 0
+
+
+def test_seguirse_a_si_mismo_no_modifica_grafo():
+    """HU-02 CA-04: seguir a sí mismo no crea relación en el grafo."""
+    sistema = SistemaRed()
+    sistema.registrar_usuario("ana0000", "Ana")
+    sistema.registrar_usuario("luis0001", "Luis")
+    sistema.seguir("ana0000", "luis0001")
+    try:
+        sistema.seguir("ana0000", "ana0000")
+    except AutoSeguimientoError:
+        pass
+    # ana sigue solo a luis, no a sí misma
+    assert sistema.dejar_de_seguir("ana0000", "luis0001") is True
+    assert sistema.dejar_de_seguir("ana0000", "ana0000") is False
+
+
 def test_listar_usuarios_orden_alfabetico():
     """HU-05 CA-03: listar entrega nombres en orden alfabético."""
     sistema = SistemaRed()
@@ -149,5 +175,13 @@ def test_recomendar_a_traves_del_sistema():
     sistema.cargar_desde_generador(GeneradorUsuarios(1).generar(10))
     sistema.seguir("usuario0000", "usuario0001")
     sistema.seguir("usuario0001", "usuario0002")
-    recomendados = list(sistema._red.recomendar(0))
+    recomendados = list(sistema.recomendar("usuario0000"))
     assert 2 in recomendados
+
+
+def test_recomendar_por_username_usuario_inexistente():
+    """HU-08 CA-02: recomendar con username inexistente lanza UsuarioNoExisteError."""
+    sistema = SistemaRed()
+    sistema.registrar_usuario("ana0000", "Ana")
+    with pytest.raises(UsuarioNoExisteError):
+        sistema.recomendar("usuario_inexistente")

@@ -39,7 +39,7 @@ class Usuario:
 
         Complejidad: Tiempo O(1), espacio O(1).
         """
-        self.feed.publicar(texto, fecha)
+        self.feed.publicar(texto, fecha, self.username)
 
     def agregar_notificacion(self, tipo, origen):
         """Agrega una notificación a la bandeja propia.

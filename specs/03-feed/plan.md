@@ -31,7 +31,8 @@ sus dos vecinos, moverse en cualquier sentido es O(1).
   Insertar deja el cursor en la nueva cabeza.
 - Publicacion (dominio/feed.py): id, texto, fecha, hilo (HiloComentarios)
 - Feed (dominio/feed.py): _lista (ListaDoble), _siguiente_id (contador entero)
-  - Insertar deja el cursor en la nueva cabeza.
+  - Insertar deja el cursor en la nueva cabeza. Si se proporciona id_publicacion,
+    se usa ese valor en lugar del contador interno.
 - HiloComentarios (dominio/hilo_comentarios.py): árbol general de comentarios por publicación
 - Excepciones en estructuras/errores.py: PublicacionInvalidaError,
   FinDelFeedError, InicioDelFeedError, BusquedaInvalidaError,

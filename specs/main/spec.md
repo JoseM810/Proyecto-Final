@@ -34,20 +34,30 @@ a HU-08.
 - **Errores:** ninguno lanza excepción; se maneja con mensaje por consola.
 - **Complejidad:** Tiempo O(h), espacio O(1).
 
-### `publicar(texto, fecha)`
-- **Precondiciones:** existe un usuario activo; texto es un texto no vacío;
-  fecha es un entero >= 0.
-- **Postcondiciones:** el usuario activo publica en su feed propio.
-- **Errores:** PublicacionInvalidaError si texto o fecha no cumplen
-  (delegado en Feed).
+### `publicar(texto)`
+- **Precondiciones:** existe un usuario activo; texto es un texto no vacío.
+- **Postcondiciones:** el usuario activo publica en su feed propio, con fecha
+  interna 0 y un identificador global único asignado por SistemaRed.
+- **Errores:** PublicacionInvalidaError si texto no cumple (delegado en Feed).
 - **Complejidad:** Tiempo O(1), espacio O(1).
 
 ### `recorrer_feed()`
 - **Precondiciones:** existe un usuario activo.
 - **Postcondiciones:** muestra las publicaciones del feed del usuario activo,
-  permitiendo avanzar y retroceder entre ellas usando avanzar() y retroceder()
-  del Feed.
+  permitiendo navegar entre ellas. 'A' va a la publicación más antigua
+  (siguiente en la lista); 'R' va a la publicación más reciente (anterior
+  en la lista).
 - **Complejidad:** Tiempo O(1) por operación de navegación, espacio O(1).
+
+### `explorar_publicaciones()`
+- **Precondiciones:** ninguna.
+- **Postcondiciones:** muestra las publicaciones de todos los usuarios de la
+  red, ordenadas por ID global descendente (más reciente primero), mostrando
+  ID, autor y texto. Permite navegar entre todas las publicaciones con
+  'A' (más antigua) y 'R' (más reciente).
+- **Complejidad:** Tiempo O(1) por operación de navegación, espacio O(m·n)
+  donde m es el promedio de publicaciones por usuario y n la cantidad de
+  usuarios.
 
 ### `seguir_usuario(username_destino)`
 - **Precondiciones:** existe un usuario activo y username_destino existe en el
@@ -179,6 +189,7 @@ a HU-08.
 | HU-04 CA-03 | Responder a un comentario inexistente lanza error sin crear respuesta | main.py opción responder |
 | HU-07 CA-04 | Comentar en una publicación genera notificación COMENTARIO | main.py opción comentar |
 | HU-07 CA-05 | Responder a un comentario genera notificación RESPUESTA | main.py opción responder |
+| HU-08 CA-04 | Se pueden explorar publicaciones de todos los usuarios ordenadas por ID global | main.py opción explorar publicaciones |
 
 ## 6. Casos extremos considerados
 - Sin usuarios cargados: mostrar mensaje y no permitir operaciones que requieran usuario.
@@ -191,6 +202,7 @@ a HU-08.
 - Comentar en publicación inexistente: muestra mensaje de error sin crear comentario.
 - Responder a comentario inexistente: muestra mensaje de error sin crear respuesta.
 - Publicación sin comentarios: ver comentarios muestra mensaje vacío.
+- Sin publicaciones en la red: explorar publicaciones muestra mensaje vacío.
 
 ## 7. Historial de cambios
 | Versión | Fecha | Cambio | Motivo |
